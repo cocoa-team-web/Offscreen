@@ -1,3 +1,4 @@
+
 name: Build Offscreen Culler
 
 on:
@@ -25,6 +26,7 @@ jobs:
           target: ${{ matrix.target }}
           sdk: given
           combine: true
+          configure-args: -DGEODE_DISABLE_FMT_CONSTEVAL=ON
 
   package:
     name: Combine Android builds
@@ -42,3 +44,4 @@ jobs:
           name: Offscreen-Culler-Android
           path: ${{ steps.build.outputs.build-output }}
           if-no-files-found: error
+          
