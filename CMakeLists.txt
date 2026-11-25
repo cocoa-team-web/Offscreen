@@ -1,34 +1,30 @@
 
 cmake_minimum_required(VERSION 3.21)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Disable fmt consteval for compatibility
-set(GEODE_DISABLE_FMT_CONSTEVAL ON CACHE BOOL "" FORCE)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(OffscreenCuller VERSION 1.0.0)
 
-# Mod source
-add_library(${PROJECT_NAME} SHARED
-    src/main.cpp
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
+    src/*.cpp
 )
 
-# Check Geode SDK
-if(NOT DEFINED ENV{GEODE_SDK})
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+if (NOT DEFINED ENV{GEODE_SDK})
     message(FATAL_ERROR
-        "Unable to find Geode SDK! Please define GEODE_SDK environment variable."
+        "Unable to find Geode SDK!"
     )
 else()
-    message(STATUS "Found Geode SDK: $ENV{GEODE_SDK}")
+    message(STATUS "Found Geode: $ENV{GEODE_SDK}")
 endif()
 
-# Load Geode SDK
 add_subdirectory(
-    "$ENV{GEODE_SDK}"
-    "${CMAKE_CURRENT_BINARY_DIR}/geode"
+    $ENV{GEODE_SDK}
+    ${CMAKE_CURRENT_BINARY_DIR}/geode
 )
 
-# Configure Geode mod
 setup_geode_mod(${PROJECT_NAME})
