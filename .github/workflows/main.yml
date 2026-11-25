@@ -1,0 +1,44 @@
+name: Build Offscreen Culler
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - Android32
+          - Android64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Geode mod
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          target: ${{ matrix.target }}
+          sdk: given
+          combine: true
+
+  package:
+    name: Combine Android builds
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Combine builds
+        id: build
+        uses: geode-sdk/build-geode-mod/combine@main
+
+      - name: Upload combined mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: Offscreen-Culler-Android
+          path: ${{ steps.build.outputs.build-output }}
+          if-no-files-found: error
